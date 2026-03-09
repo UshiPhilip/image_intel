@@ -50,15 +50,16 @@ def longitude(data: dict):
     return round(decimal, 6)
 
 def datatime(data: dict):
-    pass
+    return data.get("DateTimeOriginal") or data.get("DateTime")
 
 
-def camera_make(data: dict):
-    pass
+def camera_make(data: dict)->str:
+        return data.get('Make')
 
 
-def camera_model(data: dict):
-    pass
+
+def camera_model(data: dict)->str:
+    return data.get('Model')
 
 
 def extract_metadata(image_path):
@@ -77,7 +78,7 @@ def extract_metadata(image_path):
     # תיקון: טיפול בתמונה בלי EXIF - בלי זה, exif.items() נופל עם AttributeError
     try:
         img = Image.open(image_path)
-        exif = img._getexif()
+        exif = img.getexif()
     except Exception:
         exif = None
 
@@ -97,6 +98,11 @@ def extract_metadata(image_path):
         tag = TAGS.get(tag_id, tag_id)
         data[tag] = value
 
+    inner_exif = exif.get_ifd(0x8769)
+    for tag_id, value in inner_exif.items():
+        tag = TAGS.get(tag_id, tag_id)
+        data[tag] = value
+
     # תיקון: הוסר print(data) שהיה כאן - הדפיס את כל ה-EXIF הגולמי על כל תמונה
 
     exif_dict = {
@@ -111,7 +117,7 @@ def extract_metadata(image_path):
     return exif_dict
 
 
-def extract_all(folder_path):
+def extract_all(folder_path)->list[dict]:
     """
     שולף EXIF מכל התמונות בתיקייה.
 
@@ -121,4 +127,13 @@ def extract_all(folder_path):
     Returns:
         list של dicts (כמו extract_metadata)
     """
-    pass
+    jpg_list=[]
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith(".jpg"):
+            full_path = os.path.join(folder_path, filename)
+            metadata = extract_metadata(full_path)
+            jpg_list.append(metadata)
+    return jpg_list
+
+extract_metadata('C:\\Users\\יוסף חן\\Desktop\\PythonProject\\image_intel\\images\\ready\\IMG_006.jpg')
+print(extract_metadata('C:\\Users\\יוסף חן\\Desktop\\PythonProject\\image_intel\\images\\ready\\IMG_001.jpg'))
