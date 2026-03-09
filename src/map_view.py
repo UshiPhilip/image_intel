@@ -30,7 +30,14 @@ def create_map(images_data):
     Returns:
         string של HTML (המפה)
     """
-    pass
+
+    m = folium.Map(location=[32.0833, 34.8333], zoom_start=8)
+    for d in images_data:
+        if d["has_gps"]:
+            folium.Marker(location=[d["latitude"], d["longitude"]],
+                          popup= d.get("filename")
+                          ).add_to(m)
+    return m._repr_html_()
 
 
 
