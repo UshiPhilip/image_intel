@@ -91,7 +91,7 @@ def extract_metadata(image_path):
     return exif_dict
 
 
-def extract_all(folder_path):
+def extract_all(folder_path)->list[dict]:
     """
     שולף EXIF מכל התמונות בתיקייה.
 
@@ -101,7 +101,13 @@ def extract_all(folder_path):
     Returns:
         list של dicts (כמו extract_metadata)
     """
-    pass
+    jpg_list=[]
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith(".jpg"):
+            full_path = os.path.join(folder_path, filename)
+            metadata = extract_metadata(full_path)
+            jpg_list.append(metadata)
+    return jpg_list
 
 extract_metadata('C:\\Users\\יוסף חן\\Desktop\\PythonProject\\image_intel\\images\\ready\\IMG_006.jpg')
 print(extract_metadata('C:\\Users\\יוסף חן\\Desktop\\PythonProject\\image_intel\\images\\ready\\IMG_001.jpg'))
